@@ -1,0 +1,12 @@
+*.sln
+*.old
+*.user
+*.mgcontent
+.vs
+Properties
+.mono
+obj
+bin
+Content/bin
+Content/obj
+Dungeon Adventure Gang.csproj

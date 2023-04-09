@@ -1,22 +1,24 @@
-﻿using AnotherLib.Utilities;
+﻿using AnotherLib;
 using Microsoft.Xna.Framework.Audio;
-using System;
 
 namespace Caster.Utilities
 {
     public class GameMusicPlayer
     {
-        public static SoundEffectInstance theme1;
-        public static SoundEffectInstance theme2;
+        public static SoundEffectInstance mainTheme;
 
         public static void Update()
         {
+            if (mainTheme.State != SoundState.Playing)
+            {
+                mainTheme.Volume = GameData.MusicVolume;
+                mainTheme.Play();
+            }
         }
 
         public static void StopMusic()
         {
-            theme1.Stop();
-            theme2.Stop();
+            mainTheme.Stop();
         }
     }
 }

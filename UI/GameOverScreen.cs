@@ -55,7 +55,7 @@ namespace Caster.UI
 
 
             endGameText = new Text(Main.gameFont, text, GameScreen.center / 3f, Color.White, centerOrigin: true);
-            SoundPlayer.PlayLocalSound(Sounds.GameEnd);
+            //SoundPlayer.PlayLocalSound(Sounds.GameEnd);
             Main.uiList.Clear();
 
             Main.camera.SetToUICamera();

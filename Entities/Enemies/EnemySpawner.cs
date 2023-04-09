@@ -6,7 +6,7 @@ namespace Caster.Entities.Enemies
 {
     public class EnemySpawner
     {
-        public const int EnemySpawnTime = 2 * 60;
+        public const int EnemySpawnTime = 3 * 60;
 
         private int enemySpawnTimer = 0;
 
@@ -36,10 +36,10 @@ namespace Caster.Entities.Enemies
                 }
 
                 int enemyType = Main.random.Next(0, 1 + 1);
-                /*if (enemyType == 0)
-                    Goon.NewGoon(spawnPos);
+                if (enemyType == 0)
+                    EvilCaster.NewEvilCaster(spawnPos);
                 else if (enemyType == 1)
-                    Turret.NewTurret(spawnPos + new Vector2(0f, -8f));*/
+                    MatterCaster.NewMatterCaster(spawnPos + new Vector2(0f, -8f));
             }
         }
     }

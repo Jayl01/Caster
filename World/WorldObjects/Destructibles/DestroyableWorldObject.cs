@@ -9,7 +9,44 @@ namespace Caster.World.WorldObjects.Destructibles
         public virtual int ObjectGoreType { get; } = 0;
         public virtual int ObjectStartingHealth { get; } = 0;
 
+        private const float GravityStrength = 0.18f;
+        private const float MaxFallSpeed = 18f;
+
         public int objectHealth = 0;
+        public Vector2 velocity;
+
+        public virtual void Throw(Vector2 velocity)
+        {
+            this.velocity = velocity;
+        }
+
+        public void UpdatePhysics()
+        {
+            if (DetectTileCollisionsByCollisionStyle(position + velocity))
+                velocity = Vector2.Zero;
+
+            position += velocity;
+            if (velocity.Y < MaxFallSpeed)
+                velocity.Y += GravityStrength;
+        }
+
+
+        /// <summary>
+        /// Detects the tile's collision style in the given coordinates.
+        /// </summary>
+        /// <param name="position">The position of the point to check.</param>
+        /// <returns>Whether or not a collision happeend.</returns>
+        public bool DetectTileCollisionsByCollisionStyle(Vector2 position)
+        {
+            Point positionPoint = (position / 16).ToPoint();
+            if (!ChunkLoader.CheckForSafeTileCoordinates(positionPoint))
+                return false;
+
+            if (WorldClass.activeWorldData.tiles[positionPoint.X, positionPoint.Y].isCollideable)
+                return true;
+
+            return false;
+        }
 
         public virtual void DamageObject(int damage)
         {

@@ -8,18 +8,14 @@ namespace Caster.Effects
     public class Gore : VisualEffect
     {
         public const int AmountOfGoreTextures = 4;
-        public const byte Turret_1 = 0;
-        public const byte Turret_2 = 1;
-        public const byte Turret_3 = 2;
-        public const byte Goon = 3;
+        public const byte Caster_1 = 0;
+        public const byte Caster_2 = 1;
 
         public static Texture2D[] goreTextures;
-        private readonly Vector2[] GoreSizes = new Vector2[4]
+        private readonly Vector2[] GoreSizes = new Vector2[2]
         {
-            new Vector2(10, 7),
-            new Vector2(6, 7),
-            new Vector2(8, 9),
-            new Vector2(24, 24)
+            new Vector2(25, 9),
+            new Vector2(27, 9),
         };
 
         private int goreType = 0;
@@ -62,11 +58,16 @@ namespace Caster.Effects
                     advancedDraw = true;
                     spriteEffect = SpriteEffects.FlipHorizontally;
                 }
-                if (DetectTileCollisionsByCollisionStyle(center + (goreVelocity * (GoreSizes[goreType].Y / 2f))))
+                Vector2 searchVelocity = goreVelocity;
+                searchVelocity.Normalize();
+                searchVelocity *= GoreSizes[goreType] / 2f;
+                if (DetectTileCollisionsByCollisionStyle(center + new Vector2(0f, searchVelocity.Y)))
                 {
                     goreVelocity.Y = 0f;
                     stoppedFalling = true;
                 }
+                if (DetectTileCollisionsByCollisionStyle(center + new Vector2(searchVelocity.X, 0f)))
+                    goreVelocity.X = 0f;
 
                 //gore is snapped to the nearest pixel if the velocity is practially zero
                 if (Math.Abs(goreVelocity.X) < 0.001 && Math.Abs(goreVelocity.Y) < 0.001)

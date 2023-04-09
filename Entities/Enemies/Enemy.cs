@@ -11,8 +11,16 @@ namespace Caster.Entities.Enemies
         public virtual int EnemyHealth { get; }
 
         public int health;
+        public Vector2 throwVelocity;
+        public Color drawColor;
+        public int hurtTimer = 0;
 
         public static int EnemiesKilled = 0;
+
+        public void ThrowEnemy(Vector2 throwVelocity)
+        {
+            this.throwVelocity = throwVelocity;
+        }
 
         /// <summary>
         /// Detects collisions against tiles with the velocity in consideration.
@@ -95,7 +103,12 @@ namespace Caster.Entities.Enemies
 
         public void HurtEnemy(int damage)
         {
+            if (hurtTimer > 0)
+                return;
+
             health -= damage;
+            hurtTimer = 5;
+            drawColor = Color.Red;
             HurtEffects();
             if (health <= 0)
             {

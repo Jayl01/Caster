@@ -7,3 +7,5 @@ Using these abilities results in a rune being palced at the cursor which does wh
 The premise is about multiple enemies of different types being stronger/weaker to the spellcaster's abilities, forcing the player to mix-n-match the abilities to kill enemies effectively.
 
 There should also be interactable objects like explosive barrels that, say, explode with fire! Or electronics that get charged by electricity, etc.
+
+When you're given an OP mix of abilities, just how much destruction can you cause?

@@ -1,14 +1,16 @@
 ﻿using AnotherLib;
 using AnotherLib.Input;
 using AnotherLib.Utilities;
+using Caster.Effects;
+using Caster.Entities.Projectiles;
 using Caster.UI;
 using Caster.Utilities;
 using Caster.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
-using static Caster.Main;
 
 namespace Caster.Entities.Players
 {
@@ -16,28 +18,40 @@ namespace Caster.Entities.Players
     {
         private const int PlayerWidth = 18;
         private const int PlayerHeight = 32;
-        private const float MoveSpeed = 1.5f;
-        private const float GravityStrength = 0.18f;
-        private const float MaxFallSpeed = 18f;
+        private const float MoveSpeed = 1.7f;
+        private const float GravityStrength = 0.14f;
+        private const float MaxFallSpeed = 7f;
         private const float MaxFloatSpeed = 0.034f;
         private const float JumpStrength = 3.6f;
         private const int TeleportCooldownTime = 5 * 60;
+        private const int GravityRuneUses = 5;
         private readonly Vector2 ArmPlacementOffset = new Vector2(5, 13);
         private readonly Vector2 ArmOrigin = new Vector2(2, 3);
+        private readonly Vector2 ArmSize = new Vector2(13, 7);
         public static Texture2D playerWalkSpritesheet;
         public static Texture2D playerJumpFrame;
         public static Texture2D playerFallSpritesheet;
         public static Texture2D playerArmTexture;
         private Texture2D currentTexture;
 
+        public const int Rune_Electric = 0;
+        public const int Rune_Fire = 1;
+        public const int Rune_Gravity = 2;
+
+        public static int SelectedRuneType = Rune_Electric;
+
         public Vector2 playerCenter;
         public Vector2 oldPosition;
+        private Vector2 throwVelocity;
         public int direction = 1;
+        public int playerHealth = 3;
         private float currentYVelocity;
         private int immunityTimer = 0;
         private int teleportCooldownTimer = 0;
         private List<AfterImageData> afterImages;
         private float armRotation;
+        public int gravityRuneUsesLeft = GravityRuneUses;
+        private int gravityRuneCooldown = 0;
 
         private int frame = 0;
         private int frameCounter = 0;
@@ -46,9 +60,17 @@ namespace Caster.Entities.Players
         private PlayerState oldPlayerState;
         private bool loadedWorld = false;
         private int teleportAfterImageSpawnTimer = 0;
+        private bool playedLandSound;
 
         public override CollisionType collisionType => CollisionType.Player;
         public override CollisionType[] colliderTypes => new CollisionType[2] { CollisionType.Enemies, CollisionType.EnemyProjectiles };
+
+        private readonly Dictionary<int, Color[]> AttackSmokeColors = new Dictionary<int, Color[]>()
+        {
+            { Rune_Electric, new Color[2] { Color.Yellow, Color.Orange} },
+            { Rune_Fire, new Color[2] { Color.Red, Color.Yellow} },
+            { Rune_Gravity, new Color[2] { Color.Magenta, Color.Blue } }
+        };
 
         private enum PlayerState
         {
@@ -77,7 +99,7 @@ namespace Caster.Entities.Players
             animRect = new Rectangle(0, 0, PlayerWidth, PlayerHeight);
             playerState = PlayerState.Idle;
             afterImages = new List<AfterImageData>();
-            uiList.Add(PlayerUI.NewPlayerUI());
+            Main.uiList.Add(PlayerUI.NewPlayerUI());
         }
 
         public override void Update()
@@ -88,57 +110,122 @@ namespace Caster.Entities.Players
                 teleportCooldownTimer--;
             if (teleportAfterImageSpawnTimer > 0)
                 teleportAfterImageSpawnTimer--;
+            if (gravityRuneCooldown > 0)
+            {
+                gravityRuneCooldown--;
+                if (gravityRuneCooldown <= 0)
+                {
+                    if (gravityRuneUsesLeft < GravityRuneUses)
+                    {
+                        gravityRuneUsesLeft++;
+                        gravityRuneCooldown = 2 * 60;
+                    }
+                }
+            }
 
             if (GameData.MouseWorldPosition.X > playerCenter.X)
                 direction = 1;
             else
                 direction = -1;
-            armRotation = (GameData.MouseWorldPosition - playerCenter).GetRotation();
+            if (playerHealth > 0)
+                armRotation = (GameData.MouseWorldPosition - playerCenter).GetRotation();
 
-            Vector2 velocity = Move(MoveSpeed);
-            DetectTileCollisions();
+            Vector2 moveVelocity = Move(MoveSpeed);
+            if (playerHealth <= 0)
+                moveVelocity = Vector2.Zero;
+            Vector2 velocity = moveVelocity + throwVelocity;
             if (tileCollisionDirection[CollisionDirection_Bottom] && tileCollisionDirection[CollisionDirection_Left] && tileCollisionDirection[CollisionDirection_Right])
                 position.Y -= 1f;
+            if (throwVelocity != Vector2.Zero)
+            {
+                if (Math.Abs(throwVelocity.X) < 0.01f && Math.Abs(throwVelocity.Y) < 0.01f)
+                    throwVelocity = Vector2.Zero;
+                else
+                    throwVelocity *= 0.97f;
+            }
 
             if (currentYVelocity == 0f)
             {
-                if (velocity.X != 0f)
+                if (Math.Abs(moveVelocity.X) > 0f)
                     playerState = PlayerState.Walking;
                 else
                     playerState = PlayerState.Idle;
+
+                if (!playedLandSound)
+                {
+                    playedLandSound = true;
+                    SoundPlayer.PlayLocalSound(Sounds.Jump_Land);
+                }
             }
             else
             {
+                playedLandSound = false;
                 if (currentYVelocity > 0f)
                     playerState = PlayerState.Falling;
                 else
                     playerState = PlayerState.Jumping;
             }
 
-            if (GameInput.IsAttackJustPressed())
+            if (playerHealth > 0)
             {
-                //Shoot sound
-                //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerShoot, playerCenter, 12, 0.6f, random.Next(-4, 4 + 1) / 10f);
-                //PlayerBullet.NewBullet(playerCenter + new Vector2(6f * direction, -4.5f), new Vector2(16f * direction, 0f));
-            }
-            if ((InputManager.IsMouseRightJustPressed() || InputManager.IsButtonJustPressed(Buttons.B)) && teleportCooldownTimer <= 0)
-            {
-                immunityTimer += 60;
-                teleportCooldownTimer += TeleportCooldownTime;
-                teleportAfterImageSpawnTimer = 45;
-                /*Vector2 cameraThrowVector = GameData.MouseWorldPosition - playerCenter;
-                float oldLength = cameraThrowVector.Length();
-                cameraThrowVector.Normalize();
-                cameraThrowVector *= oldLength * 0.2f;
-                camera.ThrowCamera(cameraThrowVector, 10);*/
-                position = GameData.MouseWorldPosition + new Vector2(PlayerWidth / 2f, PlayerHeight / 2f);
-                //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerDash, playerCenter, 12);
+                if (InputManager.IsMouseLeftJustPressed() || InputManager.IsButtonJustPressed(InputManager.attackButton))
+                {
+                    if (SelectedRuneType == Rune_Electric)
+                        ElectricRune.NewElectricRune(GameData.MouseWorldPosition);
+                    else if (SelectedRuneType == Rune_Fire)
+                        FireballRune.NewFireballRune(GameData.MouseWorldPosition);
+                    else if (SelectedRuneType == Rune_Gravity && gravityRuneUsesLeft > 0)
+                    {
+                        gravityRuneUsesLeft--;
+                        gravityRuneCooldown = 2 * 60;
+                        GravityRune.NewGravityRune(GameData.MouseWorldPosition);
+                    }
+                }
+                if (GameInput.IsAttackHeld())
+                {
+                    int amountOfSmoke = Main.random.Next(1, 3 + 1);
+                    for (int i = 0; i < amountOfSmoke; i++)
+                    {
+                        Vector2 armPosition = position + ArmPlacementOffset;
+                        if (direction == -1)
+                            armPosition.X += 7f;
+
+                        Vector2 armVector = GameData.MouseWorldPosition - armPosition;
+                        armVector.Normalize();
+                        armVector *= ArmSize;
+                        Vector2 smokePosition = armPosition + armVector + new Vector2(Main.random.Next(-3, 3 + 1), Main.random.Next(-3, 3 + 1));
+                        Vector2 smokeVelocity = new Vector2(Main.random.Next(-2, 2 + 1), Main.random.Next(-2, 2 + 1)) / 12f;
+                        Smoke.NewSmokeParticle(smokePosition, smokeVelocity, AttackSmokeColors[SelectedRuneType][0], AttackSmokeColors[SelectedRuneType][1], 15, 20, 10, foreground: true);
+                    }
+                }
+                if ((InputManager.IsMouseRightJustPressed() || InputManager.IsButtonJustPressed(Buttons.B)) && teleportCooldownTimer <= 0 && !DetectTileCollisionsByCollisionStyle(GameData.MouseWorldPosition))
+                {
+                    immunityTimer += 60;
+                    teleportCooldownTimer += TeleportCooldownTime;
+                    teleportAfterImageSpawnTimer = 45;
+                    Vector2 cameraThrowVector = GameData.MouseWorldPosition - playerCenter;
+                    float oldLength = cameraThrowVector.Length();
+                    cameraThrowVector.Normalize();
+                    cameraThrowVector *= oldLength * 0.1f;
+                    Main.camera.ThrowCamera(cameraThrowVector, 5);
+                    position = GameData.MouseWorldPosition;
+                    SoundPlayer.PlayLocalSound(Sounds.Teleport);
+                    //position -= new Vector2(PlayerWidth, PlayerHeight) / 2f;
+                    //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerDash, playerCenter, 12);
+                }
             }
 
+            velocity.Y = currentYVelocity;
+            position += velocity;
+            playerCenter = position + new Vector2(PlayerWidth / 2f, PlayerHeight / 2f);
+            hitbox.X = (int)(position.X + hitboxOffset.X);
+            hitbox.Y = (int)(position.Y + hitboxOffset.Y);
+            DetectTileCollisions();
+            GameData.AudioPosition = playerCenter;
             AnimatePlayer();
             ManageAfterImages();
             ChunkLoader.UpdateActiveWorldChunk(playerCenter);
-            camera.UpdateCamera(playerCenter);
+            Main.camera.UpdateCamera(playerCenter);
             oldPosition = position;
             if (!loadedWorld)
             {
@@ -167,7 +254,7 @@ namespace Caster.Entities.Players
                 if ((GameInput.IsUpPressed() || InputManager.IsKeyJustPressed(Keys.Space)) && tileCollisionDirection[CollisionDirection_Bottom])
                 {
                     currentYVelocity = -JumpStrength;
-                    //Jump sound
+                    SoundPlayer.PlayLocalSound(Sounds.Jump);
                 }
             }
             else
@@ -194,23 +281,16 @@ namespace Caster.Entities.Players
                 if (currentYVelocity < MaxFallSpeed)
                     currentYVelocity += GravityStrength;
                 if ((GameInput.IsUpPressed() || InputManager.IsKeyPressed(Keys.Space)) && currentYVelocity > 0)
-                {
                     currentYVelocity = MathHelper.Lerp(currentYVelocity, MaxFloatSpeed, 0.12f);
-                }
             }
             else
             {
                 teleportAfterImageSpawnTimer = 0;
+                throwVelocity = Vector2.Zero;
                 if (currentYVelocity > 0)
                     currentYVelocity = 0f;
             }
 
-            velocity.Y = currentYVelocity;
-            position += velocity;
-            playerCenter = position + new Vector2(PlayerWidth / 2f, PlayerHeight / 2f);
-            hitbox.X = (int)(position.X + hitboxOffset.X);
-            hitbox.Y = (int)(position.Y + hitboxOffset.Y);
-            GameData.AudioPosition = playerCenter;
             return velocity;
         }
 
@@ -236,6 +316,12 @@ namespace Caster.Entities.Players
             hitbox.Y = (int)(position.Y + hitboxOffset.Y);
             GameData.AudioPosition = playerCenter;
             return velocity;
+        }
+
+        public void ThrowPlayer(Vector2 throwVelocity)
+        {
+            this.throwVelocity = throwVelocity;
+            currentYVelocity = throwVelocity.Y;
         }
 
         private void AnimatePlayer()
@@ -270,8 +356,8 @@ namespace Caster.Entities.Players
                         frame = 0;
 
                     animRect.Y = frame * PlayerHeight;
-                    //if (frame == 1 || frame == 3)
-                        //SoundPlayer.PlaySoundFromOtherSource(Main.random.Next(Sounds.Step_1, Sounds.Step_3 + 1), playerCenter, 12, soundPitch: Main.random.Next(-4, 4 + 1) / 10f);
+                    if (frame == 1 || frame == 3)
+                        SoundPlayer.PlaySoundFromOtherSource(Main.random.Next(Sounds.Step_1, Sounds.Step_3 + 1), playerCenter, 12, soundPitch: Main.random.Next(-4, 4 + 1) / 10f);
                 }
 
             }
@@ -340,8 +426,12 @@ namespace Caster.Entities.Players
             if (immunityTimer > 0)
                 return;
 
-            immunityTimer += 60;
-            SoundPlayer.PlayLocalSound(Sounds.AttemptHit);
+            immunityTimer = 60;
+            playerHealth--;
+            Main.camera.ShakeCamera(1, 15);
+            //if (playerHealth <= 0)
+            //End game
+            //SoundPlayer.PlayLocalSound(Sounds.AttemptHit);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

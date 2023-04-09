@@ -38,7 +38,7 @@ namespace Caster.World
             int currentYCoordinate = baseYCoordinate;
             for (int x = 0; x < width; x++)
             {
-                int segmentLength = Main.random.Next(3, 9);
+                int segmentLength = Main.random.Next(3, 18 + 1);
                 if (x + segmentLength > width)
                     segmentLength = width - x;
 
@@ -77,18 +77,21 @@ namespace Caster.World
             GenerateExtraWorldFeatures(baseYCoordinate);
             ChunkLoader.ResetChunkDimensions();
             activeWorldChunk = new Tile[ChunkLoader.ChunkSizeWidth, ChunkLoader.ChunkSizeHeight];
-            Main.currentPlayer.position = new Vector2(5 * 16, (baseYCoordinate - 4) * 16f);
-            ChunkLoader.ForceUpdateActiveWorldChunk(Main.currentPlayer.position);
+            if (Main.currentPlayer != null)
+            {
+                Main.currentPlayer.position = new Vector2(5 * 16, (baseYCoordinate - 4) * 16f);
+                ChunkLoader.ForceUpdateActiveWorldChunk(Main.currentPlayer.position);
+            }
             worldDetails = new WorldDetails();
             worldDetails.Initialize();
         }
 
         public static void GenerateExtraWorldFeatures(int baseYCoordinate)
         {
-            int amountOfAlarmPosts = Main.random.Next(128, 256 + 1);
-            for (int i = 0; i < amountOfAlarmPosts; i++)
+            int amountOfTrees = Main.random.Next(256, 512 + 1);
+            for (int i = 0; i < amountOfTrees; i++)
             {
-                Point spawnPoint = new Point(Main.random.Next(0, CurrentWorldWidth), baseYCoordinate);
+                Point spawnPoint = new Point(Main.random.Next(1, CurrentWorldWidth - 1), baseYCoordinate);
                 while (ChunkLoader.CheckForSafeTileCoordinates(spawnPoint) && !(activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable))
                 {
                     if (activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
@@ -96,38 +99,26 @@ namespace Caster.World
                     else if (!activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
                         spawnPoint.Y += 1;
                 }
-
-                //activeWorldData.staticWorldObjects.Add(activeWorldData.staticWorldObjects.Count, AlarmTower.NewAlarmTower((spawnPoint.ToVector2() * 16f) + new Vector2(8f, 17f)));
-            }
-
-            int amountOfLampPosts = Main.random.Next(64, 128 + 1);
-            for (int i = 0; i < amountOfLampPosts; i++)
-            {
-                Point spawnPoint = new Point(Main.random.Next(0, CurrentWorldWidth), baseYCoordinate);
-                while (ChunkLoader.CheckForSafeTileCoordinates(spawnPoint) && !(activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable))
+                bool skipSpawn = false;
+                for (int j = 0; j < 4; j++)
                 {
-                    if (activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
-                        spawnPoint.Y -= 1;
-                    else if (!activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
-                        spawnPoint.Y += 1;
+                    if (spawnPoint.X + j - 1 >= CurrentWorldWidth)
+                    {
+                        skipSpawn = true;
+                        break;
+                    }
+
+                    if (!activeWorldData.tiles[spawnPoint.X + j - 1, spawnPoint.Y + 1].isCollideable)
+                    {
+                        skipSpawn = true;
+                        break;
+                    }
                 }
+                if (skipSpawn)
+                    continue;
 
-                //activeWorldData.staticWorldObjects.Add(activeWorldData.staticWorldObjects.Count, LampPost.NewLampPost((spawnPoint.ToVector2() * 16f) + new Vector2(8f, 17f)));
-            }
-
-            int amountOfBoomBoxes = Main.random.Next(12, 24 + 1);
-            for (int i = 0; i < amountOfBoomBoxes; i++)
-            {
-                Point spawnPoint = new Point(Main.random.Next(0, CurrentWorldWidth), baseYCoordinate);
-                while (ChunkLoader.CheckForSafeTileCoordinates(spawnPoint) && !(activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable))
-                {
-                    if (activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
-                        spawnPoint.Y -= 1;
-                    else if (!activeWorldData.tiles[spawnPoint.X, spawnPoint.Y].isCollideable && !activeWorldData.tiles[spawnPoint.X, spawnPoint.Y + 1].isCollideable)
-                        spawnPoint.Y += 1;
-                }
-
-                //activeWorldData.staticWorldObjects.Add(activeWorldData.staticWorldObjects.Count, BoomBox.NewBoomBox((spawnPoint.ToVector2() * 16f) + new Vector2(0f, -16f)));
+                spawnPoint.Y += 1;      //Because the trees are offset
+                activeWorldData.staticWorldObjects.Add(activeWorldData.staticWorldObjects.Count, Tree.NewTree(spawnPoint.ToVector2() * 16f, Main.random.Next(0, 2 + 1)));
             }
         }
 

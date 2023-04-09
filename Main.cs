@@ -130,18 +130,12 @@ namespace Caster
             }
             else if (gameState == GameState.InGame)
             {
-                if (currentPlayer.position.X > WorldClass.CurrentWorldWidth * 16)
+                if (currentPlayer.position.X > WorldClass.CurrentWorldWidth * 16 || currentPlayer.position.X < 16 || currentPlayer.playerHealth <= 0)
                 {
-                    GameWon = true;
-                    gameState = GameState.GameOver;
-                    activeUI = GameOverScreen.NewGameOverScreen();
-                    GameMusicPlayer.StopMusic();
-                    return;
-                }
-                if (currentPlayer.position.Y > WorldClass.CurrentWorldHeight * 16)
-                {
-                    gameState = GameState.GameOver;
-                    activeUI = GameOverScreen.NewGameOverScreen("MMMMMAYBE DON'T TRY THAT NEXT TIME? YOU DO YOU THOUGH.");
+                    gameState = GameState.Title;
+                    ResetActiveData();
+                    ResetGameStats();
+                    activeUI = TitleScreen.NewTitleScreen();
                     GameMusicPlayer.StopMusic();
                     return;
                 }
@@ -153,7 +147,8 @@ namespace Caster
                 VisualEffect[] activeForegroundEffectsCopy = activeForegroundEffects.ToArray();
                 CollisionBody[] activeProjectilesCopy = activeProjectiles.ToArray();
                 CollisionBody[] activeEnemiesCopy = activeEnemies.ToArray();
-
+                UIObject[] activeUICopy = uiList.ToArray();
+                UIObject[] activeWorldUICopy = activeWorldUI.ToArray();
                 foreach (VisualEffect effect in activeBackgroundEffectsCopy)
                     effect.Update();
                 foreach (CollisionBody enemy in activeEnemiesCopy)
@@ -163,6 +158,10 @@ namespace Caster
                     projectile.Update();
                 foreach (WorldObject worldObject in WorldClass.activeWorldObjects)
                     worldObject.Update();
+                foreach (UIObject uiObject in activeWorldUICopy)
+                    uiObject.Update();
+                foreach (UIObject uiObject in activeUICopy)
+                    uiObject.Update();
                 foreach (VisualEffect effect in activeForegroundEffectsCopy)
                     effect.Update();
             }

@@ -34,6 +34,10 @@ namespace Caster.UI
 
         public override void Initialize()
         {
+            Main.camera = new Camera(Vector2.Zero, new Vector2(GameScreen.resolutionWidth, GameScreen.resolutionHeight), Camera.ControlMode.Mouse);
+            Main.camera.SetToUICamera();
+            Main.camera.cameraOrigin = new Vector2(GameScreen.resolutionWidth, GameScreen.resolutionHeight) / 2f;
+
             titleText = new Text(Main.gameFont, "CASTER", (GameScreen.center / 3f) - new Vector2(0f, GameScreen.halfScreenHeight - 5), Color.White, 2f, true);
             titleText.position.Y += titleText.size.Y;
 
@@ -44,11 +48,13 @@ namespace Caster.UI
             string controlsMessage =
                 "           CONTROLS         \n" +
                 "WASD: MOVEMENT              \n" +
-                "LEFT-CLICK: SHOOT           \n" +
-                "RIGHT-CLICK: DASH           \n" +
+                "LEFT-CLICK: CAST RUNE       \n" +
+                "RIGHT-CLICK: TELEPORT       \n" +
+                "SCROLL: CHANGE ATTACK       \n" +
                 "                            \n" +
-                "OBJECTIVE: TRAVEL 1200 TILES\n" +
-                "TO THE RIGHT. SAFELY!       \n" +
+                "OBJECTIVE: TRAVEL 1600 TILES\n" +
+                "CAUSE AS MUCH DAMAGE AS     \n" +
+                "POSSIBLE!                   \n" +
                 "                            \n" +
                 "   *PRESS ESCAPE TO EXIT*   \n";
             controlsText = new Text(Main.gameFont, controlsMessage, GameScreen.center / 3f, Color.White, centerOrigin: true);
@@ -82,7 +88,7 @@ namespace Caster.UI
                 Main.camera.SetToPlayerCamera();
                 Main.camera.UpdateCameraView();
                 Main.enemySpawner = new EnemySpawner();
-                WorldClass.GenerateWorld(1125, 80, 16, 2, 6);
+                WorldClass.GenerateWorld(1600, 80, 16, 2, 6);
                 Main.gameState = Main.GameState.InGame;
             }
             if (controlsButton.buttonPressed)

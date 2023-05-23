@@ -13,9 +13,7 @@ namespace Caster.Entities.Projectiles
         public static Texture2D fireballTexture;
 
         private readonly Point Size = new Point(12);
-        private const float LifeTime = 8 * 60;
         private int spawnTimer = 0;
-        private int lifeTimer = 0;
         private Vector2 velocity;
 
         public override CollisionType collisionType => CollisionType.FriendlyProjectiles;
@@ -75,14 +73,14 @@ namespace Caster.Entities.Projectiles
                 if (Vector2.Distance(Main.currentPlayer.playerCenter, position) <= 6 * 16)
                     Main.camera.ShakeCamera(2, 10);
                 DestroyInstance();
-                SoundPlayer.PlaySoundFromOtherSource(Sounds.Fireball_Land, position, 12);
+                SoundPlayer.PlaySoundFromOtherSource(Sounds.Fireball_Land, position, 12, soundPitch: Main.random.Next(-7, 7 + 1) / 10f);
             }
         }
 
         public override void HandleCollisions(CollisionBody collider, CollisionType colliderType)
         {
             Enemy enemy = collider as Enemy;
-            enemy.HurtEnemy(14);
+            enemy.HurtEnemy(Main.random.Next(12, 15 + 1) + Enemy.EnemiesKilled);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

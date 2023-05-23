@@ -1,5 +1,7 @@
-﻿using Caster.Effects;
+﻿using AnotherLib.Utilities;
+using Caster.Effects;
 using Caster.Entities.Projectiles;
+using Caster.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,6 +40,7 @@ namespace Caster.Entities.Enemies
         private float shootDistanceOffset;
         private readonly Vector2 LeftArmOffset = new Vector2(2, 2);
         private readonly Vector2 RightArmOffset = new Vector2(14, 3);
+        private SoundEffectInstance chantSound;
         private int chantSoundPlayTimer;
 
         public override int EnemyWidth => 19;
@@ -118,15 +121,18 @@ namespace Caster.Entities.Enemies
                         currentYVelocity = -JumpStrength;
                     animState = AnimState.Walk;
                     playedChargeSound = false;
+                    if (chantSound.State == SoundState.Playing)
+                        chantSound.Stop();
                 }
                 else
                 {
                     shootTimer++;
+                    chantSoundPlayTimer++;
                     animState = AnimState.Attacking;
                     if (!playedChargeSound)
                     {
                         playedChargeSound = true;
-                        //SoundPlayer.PlaySoundFromOtherSource(Sounds.EvilCasterShootCharge, center, 16, 0.6f);
+                        SoundPlayer.PlaySoundFromOtherSource(Sounds.Caster_Chant, center, 16, 0.6f);
                     }
                     if (shootTimer >= 5 * 60)
                     {

@@ -107,6 +107,7 @@ namespace Caster.Utilities
             SoundPlayer.sounds[Sounds.FireballRune_Shoot] = LoadSFX("Projectiles/FireballRune_Shoot");
             SoundPlayer.sounds[Sounds.Fireball_Land] = LoadSFX("Projectiles/Fireball_Land");
             SoundPlayer.sounds[Sounds.GravityRune_Fling] = LoadSFX("Projectiles/GravityRune_Fling");
+            SoundPlayer.sounds[Sounds.Teleport] = LoadSFX("Ambience/Teleport");
             SoundPlayer.sounds[Sounds.SpiritBomb_Explosion] = LoadSFX("Projectiles/SpiritBombExplosion");
             /*SoundPlayer.sounds = new SoundEffect[20];
             SoundPlayer.sounds[Sounds.Step_1] = LoadSFX("SFX/Step_1");

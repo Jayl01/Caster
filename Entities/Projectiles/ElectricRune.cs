@@ -1,13 +1,13 @@
-﻿using AnotherLib.Collision;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using AnotherLib;
+using AnotherLib.Collision;
+using AnotherLib.Input;
+using AnotherLib.Utilities;
 using Caster.Effects;
 using Caster.Entities.Enemies;
-using AnotherLib;
-using AnotherLib.Input;
-using System.Collections.Generic;
-using AnotherLib.Utilities;
 using Caster.Utilities;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Caster.Entities.Projectiles
 {
@@ -87,7 +87,7 @@ namespace Caster.Entities.Projectiles
                     soundPlayTimer += 42;
                     SoundPlayer.PlaySoundFromOtherSource(Sounds.ElectricRune_Active, this, 20, 1f);
                 }
-            }    
+            }
 
             randomZapTimer++;
             if (randomZapTimer >= randomZapTime)
@@ -145,7 +145,7 @@ namespace Caster.Entities.Projectiles
                         Vector2 zapPosition = enemy.position + new Vector2(Main.random.Next(0, enemy.EnemyWidth), Main.random.Next(0, enemy.EnemyHeight));
                         zapPositions.Add(new ZapPosition(5, zapPosition));
                         SoundPlayer.PlaySoundFromOtherSource(Sounds.ElectricRune_Shock, enemy.position, 16, soundPitch: Main.random.Next(-3, 3 + 1) / 10f);
-                        enemy.HurtEnemy(Main.random.Next(3, 6 + 1));
+                        enemy.HurtEnemy(Main.random.Next(3, 6 + 1) + Enemy.EnemiesKilled);
                         currentZaps++;
                     }
                 }

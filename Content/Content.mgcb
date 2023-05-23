@@ -56,6 +56,12 @@
 /processorParam:Quality=Best
 /build:Sounds/Ambience/Step_3.wav
 
+#begin Sounds/Ambience/Teleport.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/Teleport.wav
+
 #begin Sounds/Ambience/Wind.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -91,12 +97,6 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Projectiles/Fireball_Land.wav
-
-#begin Sounds/Projectiles/FireballRune_Active.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/Projectiles/FireballRune_Active.wav
 
 #begin Sounds/Projectiles/FireballRune_Active.wav
 /importer:WavImporter

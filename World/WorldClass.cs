@@ -102,13 +102,14 @@ namespace Caster.World
                 bool skipSpawn = false;
                 for (int j = 0; j < 4; j++)
                 {
-                    if (spawnPoint.X + j - 1 >= CurrentWorldWidth)
+                    int checkedCoord = spawnPoint.X + j - 2;
+                    if (checkedCoord >= CurrentWorldWidth || checkedCoord < 0)
                     {
                         skipSpawn = true;
                         break;
                     }
 
-                    if (!activeWorldData.tiles[spawnPoint.X + j - 1, spawnPoint.Y + 1].isCollideable)
+                    if (!activeWorldData.tiles[checkedCoord, spawnPoint.Y + 1].isCollideable)
                     {
                         skipSpawn = true;
                         break;

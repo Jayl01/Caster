@@ -177,7 +177,7 @@ namespace Caster.Entities.Players
                     else if (SelectedRuneType == Rune_Gravity && gravityRuneUsesLeft > 0)
                     {
                         gravityRuneUsesLeft--;
-                        gravityRuneCooldown = 2 * 60;
+                        gravityRuneCooldown = 6 * 60;
                         GravityRune.NewGravityRune(GameData.MouseWorldPosition);
                     }
                 }
@@ -206,8 +206,8 @@ namespace Caster.Entities.Players
                     Vector2 cameraThrowVector = GameData.MouseWorldPosition - playerCenter;
                     float oldLength = cameraThrowVector.Length();
                     cameraThrowVector.Normalize();
-                    cameraThrowVector *= oldLength * 0.1f;
-                    Main.camera.ThrowCamera(cameraThrowVector, 5);
+                    cameraThrowVector *= -oldLength * 0.1f;
+                    Main.camera.ThrowCamera(cameraThrowVector, 60);
                     position = GameData.MouseWorldPosition;
                     SoundPlayer.PlayLocalSound(Sounds.Teleport);
                     //position -= new Vector2(PlayerWidth, PlayerHeight) / 2f;

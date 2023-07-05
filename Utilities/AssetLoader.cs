@@ -109,31 +109,6 @@ namespace Caster.Utilities
             SoundPlayer.sounds[Sounds.GravityRune_Fling] = LoadSFX("Projectiles/GravityRune_Fling");
             SoundPlayer.sounds[Sounds.Teleport] = LoadSFX("Ambience/Teleport");
             SoundPlayer.sounds[Sounds.SpiritBomb_Explosion] = LoadSFX("Projectiles/SpiritBombExplosion");
-            /*SoundPlayer.sounds = new SoundEffect[20];
-            SoundPlayer.sounds[Sounds.Step_1] = LoadSFX("SFX/Step_1");
-            SoundPlayer.sounds[Sounds.Step_2] = LoadSFX("SFX/Step_2");
-            SoundPlayer.sounds[Sounds.Step_3] = LoadSFX("SFX/Step_3");
-            SoundPlayer.sounds[Sounds.PlayerJump] = LoadSFX("SFX/PlayerJump");
-            SoundPlayer.sounds[Sounds.PlayerShoot] = LoadSFX("SFX/PlayerShoot");
-            SoundPlayer.sounds[Sounds.Goon_Hurt1] = LoadSFX("SFX/Goon_Hurt_1");
-            SoundPlayer.sounds[Sounds.Goon_Hurt2] = LoadSFX("SFX/Goon_Hurt_2");
-            SoundPlayer.sounds[Sounds.GameEnd] = LoadSFX("SFX/DeathSound");
-            SoundPlayer.sounds[Sounds.GoonShootCharge] = LoadSFX("SFX/ShotCharge_1");
-            SoundPlayer.sounds[Sounds.TurretShootCharge] = LoadSFX("SFX/ShotCharge_2");
-            SoundPlayer.sounds[Sounds.TurretHurt] = LoadSFX("SFX/Turret_Hit");
-            SoundPlayer.sounds[Sounds.WrongDirectionSound] = LoadSFX("SFX/WrongDirectionSound");
-            SoundPlayer.sounds[Sounds.TimeOutSound] = LoadSFX("SFX/TimeOutSound");
-            SoundPlayer.sounds[Sounds.TurretExplosionSound] = LoadSFX("SFX/TurretExplosion");
-            SoundPlayer.sounds[Sounds.PlayerDash] = LoadSFX("SFX/DashSound");
-            SoundPlayer.sounds[Sounds.AttemptHit] = LoadSFX("SFX/AttemptHitSound");
-            SoundPlayer.sounds[Sounds.DirectionalSound] = LoadSFX("SFX/DirectionalAppear");
-            SoundPlayer.sounds[Sounds.One] = LoadSFX("SFX/One");
-            SoundPlayer.sounds[Sounds.Three] = LoadSFX("SFX/Three");
-            SoundPlayer.sounds[Sounds.Four] = LoadSFX("SFX/Four");
-
-            GameMusicPlayer.theme1 = LoadSFX("Music/Theme_1").CreateInstance();
-            GameMusicPlayer.theme2 = LoadSFX("Music/Theme_2").CreateInstance();
-            BoomBox.boomBoxSong = LoadSFX("Music/RadioTheme");*/
         }
     }
 }

@@ -33,14 +33,13 @@ namespace Caster.Entities.Enemies
         private Rectangle animRect;
         private int shootTimer = 0;
         private float currentYVelocity = 0f;
-        private bool playedChargeSound = false;
         private Vector2 deathVelocity;
         private Vector2 idleWalkVelocity;
         private int sinTimer = 0;
         private float shootDistanceOffset;
         private readonly Vector2 LeftArmOffset = new Vector2(2, 2);
         private readonly Vector2 RightArmOffset = new Vector2(14, 3);
-        private SoundEffectInstance chantSound;
+        private TrackedSoundEffectInstance chantSound;
         private int chantSoundPlayTimer;
 
         public override int EnemyWidth => 19;
@@ -72,6 +71,7 @@ namespace Caster.Entities.Enemies
             idleWalkVelocity = new Vector2(-2f, 0f);
             shootDistanceOffset = Main.random.Next(-2 * 16, (2 * 16) + 1);
             drawColor = Color.White;
+            chantSound = TrackedSoundEffectInstance.CreateTrackedSound(SoundPlayer.sounds[Sounds.Caster_Chant].CreateInstance(), this, true, 12);
             if (Main.currentPlayer.playerCenter.X > position.X)
                 idleWalkVelocity = new Vector2(2f, 0f);
         }
@@ -120,20 +120,13 @@ namespace Caster.Entities.Enemies
                     if (DetectTileCollisionsByCollisionStyle(center + (velocity * 18f)))
                         currentYVelocity = -JumpStrength;
                     animState = AnimState.Walk;
-                    playedChargeSound = false;
-                    if (chantSound.State == SoundState.Playing)
-                        chantSound.Stop();
                 }
                 else
                 {
                     shootTimer++;
                     chantSoundPlayTimer++;
                     animState = AnimState.Attacking;
-                    if (!playedChargeSound)
-                    {
-                        playedChargeSound = true;
-                        SoundPlayer.PlaySoundFromOtherSource(Sounds.Caster_Chant, center, 16, 0.6f);
-                    }
+                    chantSound.soundInstance.Play();
                     if (shootTimer >= 5 * 60)
                     {
                         shootTimer = 0;
@@ -148,7 +141,6 @@ namespace Caster.Entities.Enemies
                             LaserRune.NewLaserRune(spawnPosition, travelDirection);
                         }
                         //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerShoot, center, 12, soundPitch: Main.random.Next(4, 6 + 1) / 10f);
-                        playedChargeSound = false;
                     }
                     int amountOfSmoke = Main.random.Next(2, 5 + 1);
                     for (int i = 0; i < amountOfSmoke; i++)
@@ -167,6 +159,9 @@ namespace Caster.Entities.Enemies
                     }
                 }
             }
+
+            chantSound.UpdateSourcePosition(position);
+            chantSound.UpdateAudioInformation();
 
             if (!tileCollisionDirection[CollisionDirection_Bottom])
             {

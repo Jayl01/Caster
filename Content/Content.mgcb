@@ -26,17 +26,17 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/MainFont.spritefont
 
-#begin Sounds/Ambience/Jump.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/Ambience/Jump.wav
-
 #begin Sounds/Ambience/Jump_Land.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Ambience/Jump_Land.wav
+
+#begin Sounds/Ambience/Jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/Jump.wav
 
 #begin Sounds/Ambience/Step_1.wav
 /importer:WavImporter
@@ -67,6 +67,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Ambience/Wind.wav
+
+#begin Sounds/Enemies/Caster_Chant.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemies/Caster_Chant.wav
 
 #begin Sounds/Enemies/Caster_Chant.wav
 /importer:WavImporter

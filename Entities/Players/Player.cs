@@ -200,6 +200,13 @@ namespace Caster.Entities.Players
                 }
                 if ((InputManager.IsMouseRightJustPressed() || InputManager.IsButtonJustPressed(Buttons.B)) && teleportCooldownTimer <= 0 && !DetectTileCollisionsByCollisionStyle(GameData.MouseWorldPosition))
                 {
+                    int amountOfSmoke = Main.random.Next(12, 24 + 1);
+                    for (int i = 0; i < amountOfSmoke; i++)
+                    {
+                        Vector2 smokePosition = position + new Vector2(Main.random.Next(0, PlayerWidth + 1), Main.random.Next(0, PlayerHeight + 1));
+                        Vector2 smokeVelocity = new Vector2(Main.random.Next(-1, 1 + 1), Main.random.Next(-5, -1 + 1)) / 6f;
+                        Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.LightBlue, Color.Blue, 30, 60, 20, foreground: true);
+                    }
                     immunityTimer += 60;
                     teleportCooldownTimer += TeleportCooldownTime;
                     teleportAfterImageSpawnTimer = 45;
@@ -210,6 +217,13 @@ namespace Caster.Entities.Players
                     Main.camera.ThrowCamera(cameraThrowVector, 60);
                     position = GameData.MouseWorldPosition;
                     SoundPlayer.PlayLocalSound(Sounds.Teleport);
+                    amountOfSmoke = Main.random.Next(12, 24 + 1);
+                    for (int i = 0; i < amountOfSmoke; i++)
+                    {
+                        Vector2 smokePosition = position + new Vector2(Main.random.Next(0, PlayerWidth + 1), Main.random.Next(0, PlayerHeight + 1));
+                        Vector2 smokeVelocity = new Vector2(Main.random.Next(-1, 1 + 1), Main.random.Next(-5, -1 + 1)) / 6f;
+                        Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.LightBlue, Color.Blue, 30, 60, 20, foreground: true);
+                    }
                     //position -= new Vector2(PlayerWidth, PlayerHeight) / 2f;
                     //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerDash, playerCenter, 12);
                 }
@@ -281,7 +295,16 @@ namespace Caster.Entities.Players
                 if (currentYVelocity < MaxFallSpeed)
                     currentYVelocity += GravityStrength;
                 if ((GameInput.IsUpPressed() || InputManager.IsKeyPressed(Keys.Space)) && currentYVelocity > 0)
+                {
                     currentYVelocity = MathHelper.Lerp(currentYVelocity, MaxFloatSpeed, 0.12f);
+                    int amountOfSmoke = Main.random.Next(1, 4 + 1);
+                    for (int i = 0; i < amountOfSmoke; i++)
+                    {
+                        Vector2 smokePosition = position + new Vector2(Main.random.Next(0, PlayerWidth + 1), Main.random.Next(PlayerHeight - 4, PlayerHeight + 1));
+                        Vector2 smokeVelocity = new Vector2(Main.random.Next(-1, 1 + 1), Main.random.Next(-5, -1 + 1)) / 6f;
+                        Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.White, Color.Gray, 15, 30, 10, foreground: true);
+                    }
+                }
             }
             else
             {

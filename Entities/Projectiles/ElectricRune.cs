@@ -146,6 +146,7 @@ namespace Caster.Entities.Projectiles
                         zapPositions.Add(new ZapPosition(5, zapPosition));
                         SoundPlayer.PlaySoundFromOtherSource(Sounds.ElectricRune_Shock, enemy.position, 16, soundPitch: Main.random.Next(-3, 3 + 1) / 10f);
                         enemy.HurtEnemy(Main.random.Next(3, 6 + 1) + Enemy.EnemiesKilled);
+                        enemy.ThrowEnemy(new Vector2(Main.random.Next(-2, 2 + 1), Main.random.Next(-2, 2 + 1)) / 10f);
                         currentZaps++;
                     }
                 }

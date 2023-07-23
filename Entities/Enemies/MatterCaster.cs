@@ -1,5 +1,7 @@
-﻿using Caster.Effects;
+﻿using AnotherLib.Utilities;
+using Caster.Effects;
 using Caster.Entities.Projectiles;
+using Caster.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -36,6 +38,7 @@ namespace Caster.Entities.Enemies
         private int sinTimer = 0;
         private float shootDistanceOffset;
         private int amountOfWallsCasted = 0;
+        private TrackedSoundEffectInstance chantSound;
         private readonly Vector2 LeftArmOffset = new Vector2(2, 2);
         private readonly Vector2 RightArmOffset = new Vector2(14, 3);
 
@@ -68,6 +71,7 @@ namespace Caster.Entities.Enemies
             idleWalkVelocity = new Vector2(-2f, 0f);
             shootDistanceOffset = Main.random.Next(-2 * 16, (2 * 16) + 1);
             drawColor = Color.White;
+            chantSound = TrackedSoundEffectInstance.CreateTrackedSound(SoundPlayer.sounds[Sounds.Caster_Chant].CreateInstance(), this, true, 6, 0.1f);
             if (Main.currentPlayer.playerCenter.X > position.X)
                 idleWalkVelocity = new Vector2(2f, 0f);
         }
@@ -251,7 +255,7 @@ namespace Caster.Entities.Enemies
             deathVelocity = new Vector2(4f * -direction, currentYVelocity);
             deathVelocity.X *= 0.1f;
             shootTimer = 0;
-            //SoundPlayer.PlaySoundFromOtherSource(Main.random.Next(Sounds.MatterCaster_Hurt1, Sounds.MatterCaster_Hurt2 + 1), center, 12, soundPitch: Main.random.Next(-4, 4 + 1) / 10f);
+            SoundPlayer.PlaySoundFromOtherSource(Sounds.Caster_Hurt, center, 8, soundPitch: Main.random.Next(-8, -6 + 1) / 10f);
         }
 
         public override void DeathEffects()

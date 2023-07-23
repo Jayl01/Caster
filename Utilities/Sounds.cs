@@ -17,5 +17,6 @@
         public const byte GravityRune_Fling = 12;
         public const byte Teleport = 13;
         public const byte SpiritBomb_Explosion = 14;
+        public const byte Caster_Hurt = 15;
     }
 }

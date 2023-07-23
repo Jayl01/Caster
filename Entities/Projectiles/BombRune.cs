@@ -41,9 +41,9 @@ namespace Caster.Entities.Projectiles
             for (int i = 0; i < amountOfSmoke; i++)
             {
                 float scale = MathHelper.Clamp(spawnTimer / 60f, 0f, 1f);
-                Vector2 smokePosition = position + (new Vector2(Main.random.Next(0, Size.X + 1), Main.random.Next(0, Size.Y + 1)) - ((Size.ToVector2() / 2f))) * scale;
-                Vector2 smokeVelocity = new Vector2(Main.random.Next(-4, 4 + 1), Main.random.Next(-4, 4 + 1)) / 12f;
-                Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.White, Color.LightBlue, 15, 20, 10, foreground: true);
+                Vector2 smokePosition = position + (new Vector2(Main.random.Next(0, (int)(Size.X * scale) + 1), Main.random.Next(0, (int)(Size.Y * scale) + 1)) - (Size.ToVector2() / 2f * scale));
+                Vector2 smokeVelocity = new Vector2(Main.random.Next(-4, 4 + 1), Main.random.Next(-4, 4 + 1)) / 24f;
+                Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.White, Color.LightBlue, 25, 40, 20, foreground: true);
             }
 
             if (spawnTimer < 120)

@@ -50,7 +50,7 @@ namespace Caster.Entities.Projectiles
                 dropVelocity = 0f;
 
             Vector2 velocity = originalVelocity + new Vector2(0f, dropVelocity) + throwVelocity;
-            int amountOfSpiritBombSmoke = Main.random.Next(1, 3 + 1);
+            int amountOfSpiritBombSmoke = Main.random.Next(2, 6 + 1);
             for (int i = 0; i < amountOfSpiritBombSmoke; i++)
             {
                 Vector2 smokePosition = position + new Vector2(Main.random.Next(0, Size.X + 1), Main.random.Next(0, Size.Y + 1));
@@ -76,10 +76,10 @@ namespace Caster.Entities.Projectiles
                 {
                     float angle = 360f * (i / 60f);
                     angle = MathHelper.ToRadians(angle);
-                    Vector2 smokePosition = position + (new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * Main.random.Next(16, (4 * 16) + 1));
+                    Vector2 smokePosition = position + (new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * Main.random.Next(16, (2 * 16) + 1));
                     Vector2 smokeVelocity = smokePosition - position;
                     smokeVelocity.Normalize();
-                    smokeVelocity *= (4f * 16f) - Vector2.Distance(smokePosition, position);
+                    smokeVelocity *= (2f * 16f) - Vector2.Distance(smokePosition, position);
                     smokeVelocity *= Main.random.Next(6, 12 + 1) / 100f;
                     Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.White, Color.LightBlue, 30, 30, 20, foreground: true);
                 }

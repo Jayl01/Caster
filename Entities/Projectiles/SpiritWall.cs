@@ -49,7 +49,7 @@ namespace Caster.Entities.Projectiles
             for (int i = 1; i < amountOfSpiritWallSmoke; i++)
             {
                 Vector2 smokePosition = position + new Vector2(Main.random.Next(0, Size.X + 1), Main.random.Next(0, Size.Y + 1));
-                Vector2 smokeVelocity = new Vector2(Main.random.Next(0, 5 + 1) * -direction, 0f) / 12f;
+                Vector2 smokeVelocity = new Vector2(Main.random.Next(2, 3 + 1) / 10f * -direction, 0f) / 12f;
                 Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.White, Color.LightBlue, 30, 30, 20, foreground: true);
             }
 
@@ -74,7 +74,7 @@ namespace Caster.Entities.Projectiles
             if (direction == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            spriteBatch.Draw(spiritWallTexture, position, null, Color.White * (spawnTimer / 60f), 0f, Vector2.Zero, 1f, spriteEffects, 0f);
+            spriteBatch.Draw(spiritWallTexture, position, null, Color.White * (spawnTimer / 120f), 0f, Vector2.Zero, 1f, spriteEffects, 0f);
         }
     }
 }

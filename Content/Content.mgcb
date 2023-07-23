@@ -74,11 +74,11 @@
 /processorParam:Quality=Best
 /build:Sounds/Enemies/Caster_Chant.wav
 
-#begin Sounds/Enemies/Caster_Chant.wav
+#begin Sounds/Enemies/Enemy_Hurt.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/Enemies/Caster_Chant.wav
+/build:Sounds/Enemies/Enemy_Hurt.wav
 
 #begin Sounds/Music/Caster_Theme.wav
 /importer:WavImporter

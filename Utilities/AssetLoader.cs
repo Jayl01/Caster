@@ -94,7 +94,7 @@ namespace Caster.Utilities
         {
             GameMusicPlayer.mainTheme = LoadSFX("Music/Caster_Theme").CreateInstance();
 
-            SoundPlayer.sounds = new SoundEffect[20];
+            SoundPlayer.sounds = new SoundEffect[16];
             SoundPlayer.sounds[Sounds.Step_1] = LoadSFX("Ambience/Step_1");
             SoundPlayer.sounds[Sounds.Step_2] = LoadSFX("Ambience/Step_2");
             SoundPlayer.sounds[Sounds.Step_3] = LoadSFX("Ambience/Step_3");
@@ -109,6 +109,7 @@ namespace Caster.Utilities
             SoundPlayer.sounds[Sounds.GravityRune_Fling] = LoadSFX("Projectiles/GravityRune_Fling");
             SoundPlayer.sounds[Sounds.Teleport] = LoadSFX("Ambience/Teleport");
             SoundPlayer.sounds[Sounds.SpiritBomb_Explosion] = LoadSFX("Projectiles/SpiritBombExplosion");
+            SoundPlayer.sounds[Sounds.Caster_Hurt] = LoadSFX("Enemies/Enemy_Hurt");
         }
     }
 }

@@ -37,10 +37,9 @@ namespace Caster.Entities.Enemies
         private Vector2 idleWalkVelocity;
         private int sinTimer = 0;
         private float shootDistanceOffset;
+        private int attackCooldown = 0;
         private readonly Vector2 LeftArmOffset = new Vector2(2, 2);
         private readonly Vector2 RightArmOffset = new Vector2(14, 3);
-        private TrackedSoundEffectInstance chantSound;
-        private int chantSoundPlayTimer;
 
         public override int EnemyWidth => 19;
         public override int EnemyHeight => 27;
@@ -71,7 +70,6 @@ namespace Caster.Entities.Enemies
             idleWalkVelocity = new Vector2(-2f, 0f);
             shootDistanceOffset = Main.random.Next(-2 * 16, (2 * 16) + 1);
             drawColor = Color.White;
-            chantSound = TrackedSoundEffectInstance.CreateTrackedSound(SoundPlayer.sounds[Sounds.Caster_Chant].CreateInstance(), this, true, 12);
             if (Main.currentPlayer.playerCenter.X > position.X)
                 idleWalkVelocity = new Vector2(2f, 0f);
         }
@@ -89,11 +87,13 @@ namespace Caster.Entities.Enemies
                     drawColor = Color.White;
             }
 
+            if (attackCooldown > 0)
+                attackCooldown--;
+
             Vector2 velocity = throwVelocity;
             if (!targetFound)
             {
                 animState = AnimState.Walk;
-                velocity.X += idleWalkVelocity.X;
                 if (DetectTileCollisionsByCollisionStyle(center + (velocity * 18f)))
                     currentYVelocity = -JumpStrength;
                 if (Vector2.Distance(Main.currentPlayer.playerCenter, center) <= DetectionDistance)
@@ -104,6 +104,8 @@ namespace Caster.Entities.Enemies
                     else
                         direction = -1;
                 }
+                else
+                    velocity.X += idleWalkVelocity.X;
             }
             else
             {
@@ -123,45 +125,42 @@ namespace Caster.Entities.Enemies
                 }
                 else
                 {
-                    shootTimer++;
-                    chantSoundPlayTimer++;
-                    animState = AnimState.Attacking;
-                    chantSound.soundInstance.Play();
-                    if (shootTimer >= 5 * 60)
+                    if (attackCooldown <= 0)
                     {
-                        shootTimer = 0;
-                        int runeType = Main.random.Next(0, 0 + 1);
-                        if (runeType == 0)
+                        shootTimer++;
+                        animState = AnimState.Attacking;
+                        if (shootTimer >= 5 * 60)
                         {
+                            shootTimer = 0;
                             Vector2 spawnPosition = Main.currentPlayer.playerCenter + new Vector2(Main.random.Next(-8 * 16, (8 * 16) + 1), -Main.random.Next(3 * 16, (5 * 16) + 1));
                             int travelDirection = 1;
                             if (Main.currentPlayer.playerCenter.X < spawnPosition.X)
                                 travelDirection = -1;
 
                             LaserRune.NewLaserRune(spawnPosition, travelDirection);
+                            attackCooldown = 2 * 60;
+                            //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerShoot, center, 12, soundPitch: Main.random.Next(4, 6 + 1) / 10f);
                         }
-                        //SoundPlayer.PlaySoundFromOtherSource(Sounds.PlayerShoot, center, 12, soundPitch: Main.random.Next(4, 6 + 1) / 10f);
-                    }
-                    int amountOfSmoke = Main.random.Next(2, 5 + 1);
-                    for (int i = 0; i < amountOfSmoke; i++)
-                    {
-                        bool rightArm = Main.random.Next(0, 1 + 1) == 0;
-                        Vector2 offset = RightArmOffset;
-                        if (rightArm)
-                            offset = LeftArmOffset;
+                        int amountOfSmoke = Main.random.Next(6, 9 + 1);
+                        for (int i = 0; i < amountOfSmoke; i++)
+                        {
+                            bool rightArm = Main.random.Next(0, 1 + 1) == 0;
+                            Vector2 offset = RightArmOffset;
+                            if (rightArm)
+                                offset = LeftArmOffset;
 
-                        Vector2 armPosition = position + offset;
-                        if (direction == -1)
-                            armPosition = position + new Vector2(19, 0) + new Vector2(-offset.X, offset.Y);
-                        Vector2 smokePosition = armPosition + new Vector2(Main.random.Next(-3, 3 + 1), Main.random.Next(-3, 3 + 1));
-                        Vector2 smokeVelocity = new Vector2(Main.random.Next(-2, 2 + 1), Main.random.Next(-2, 2 + 1)) / 12f;
-                        Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.Red, Color.DarkRed, 15, 20, 10, foreground: rightArm);
+                            Vector2 armPosition = position + offset;
+                            if (direction == -1)
+                                armPosition = position + new Vector2(19, 0) + new Vector2(-offset.X, offset.Y);
+                            Vector2 smokePosition = armPosition + new Vector2(Main.random.Next(-30, 30 + 1) / 10f, Main.random.Next(-30, 30 + 1) / 10f);
+                            Vector2 smokeVelocity = new Vector2(Main.random.Next(-2, 2 + 1), Main.random.Next(-2, 2 + 1)) / 12f;
+                            Smoke.NewSmokeParticle(smokePosition, smokeVelocity, Color.Red, Color.DarkRed, 15, 20, 10, foreground: rightArm);
+                        }
                     }
+                    else
+                        animState = AnimState.Walk;
                 }
             }
-
-            chantSound.UpdateSourcePosition(position);
-            chantSound.UpdateAudioInformation();
 
             if (!tileCollisionDirection[CollisionDirection_Bottom])
             {
@@ -241,7 +240,8 @@ namespace Caster.Entities.Enemies
             deathVelocity = new Vector2(4f * -direction, currentYVelocity);
             deathVelocity.X *= 0.1f;
             shootTimer = 0;
-            //SoundPlayer.PlaySoundFromOtherSource(Main.random.Next(Sounds.EvilCaster_Hurt1, Sounds.EvilCaster_Hurt2 + 1), center, 12, soundPitch: Main.random.Next(-4, 4 + 1) / 10f);
+            attackCooldown = 30;
+            SoundPlayer.PlaySoundFromOtherSource(Sounds.Caster_Hurt, center, 8, soundPitch: Main.random.Next(-2, 2 + 1) / 10f);
         }
 
         public override void DeathEffects()
